@@ -106,3 +106,10 @@ For more details, refer to the migration file: `migrations/001_create_tables.up.
     *   Access the Swagger documentation at `http://localhost:8080/swagger/index.html`.
     *   Access the simple web UI at `http://localhost:8080/web/league.html`.
 
+## 🚀 Deployment
+The application is deployed on Render.com and can be accessed at:
+[https://insider-league-simulator.onrender.com/](https://insider-league-simulator.onrender.com/)
+
+### Go Version
+The project uses Go version `1.20.0`. This version was chosen for compatibility with the Render.com deployment environment.
+
