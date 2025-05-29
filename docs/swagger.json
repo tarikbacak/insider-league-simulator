@@ -1,0 +1,527 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Insider Football League Simulator using Poisson Distribution \u0026 Monte Carlo methods",
+        "title": "Insider League Simulator API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Returns basic information about the API and its endpoints.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "info"
+                ],
+                "summary": "API Information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.APIInfoResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Checks the health of the service",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.HealthCheckResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/init": {
+            "post": {
+                "description": "Resets and initializes the database with new random fixtures",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reset"
+                ],
+                "summary": "Initialize database",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.InitResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/matches": {
+            "get": {
+                "description": "Returns list of matches for a specific week or all weeks",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "matches"
+                ],
+                "summary": "Get match list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Week number",
+                        "name": "week",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.MatchesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/matches/all": {
+            "post": {
+                "description": "Simulates all remaining unplayed matches until the end of the season",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "simulation"
+                ],
+                "summary": "Simulate all remaining weeks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SimulationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/matches/next": {
+            "post": {
+                "description": "Simulates all matches for the next unplayed week using Poisson distribution",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "simulation"
+                ],
+                "summary": "Simulate next week's matches",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SimulationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/predictions": {
+            "get": {
+                "description": "Returns championship predictions based on Monte Carlo simulation for a specific week.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "predictions"
+                ],
+                "summary": "Get championship predictions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Week number for prediction",
+                        "name": "week",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.PredictionsListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/standings": {
+            "get": {
+                "description": "Returns current league table with teams' points, goals, and other statistics",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "standings"
+                ],
+                "summary": "Get league standings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.StandingsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.APIInfoResponse": {
+            "type": "object",
+            "properties": {
+                "endpoints": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Insider League Simulator API"
+                },
+                "version": {
+                    "type": "string",
+                    "example": "1.0.0"
+                }
+            }
+        },
+        "api.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string",
+                    "example": "Detailed error information"
+                },
+                "error": {
+                    "type": "string",
+                    "example": "Error message"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2023-10-27 10:00:00"
+                }
+            }
+        },
+        "api.HealthCheckResponse": {
+            "type": "object",
+            "properties": {
+                "service": {
+                    "type": "string",
+                    "example": "insider-league-simulator"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "healthy"
+                },
+                "timestamp": {
+                    "$ref": "#/definitions/api.HealthCheckTimestamp"
+                }
+            }
+        },
+        "api.HealthCheckSecondsValue": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string",
+                    "example": "2023-10-27 10:00:00"
+                }
+            }
+        },
+        "api.HealthCheckTimestamp": {
+            "type": "object",
+            "properties": {
+                "unix": {
+                    "$ref": "#/definitions/api.HealthCheckUnixTimestamp"
+                }
+            }
+        },
+        "api.HealthCheckUnixTimestamp": {
+            "type": "object",
+            "properties": {
+                "seconds": {
+                    "$ref": "#/definitions/api.HealthCheckSecondsValue"
+                }
+            }
+        },
+        "api.InitResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Database initialized successfully"
+                },
+                "note": {
+                    "type": "string",
+                    "example": "New random fixture generated"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2023-10-27 10:00:00"
+                }
+            }
+        },
+        "api.MatchDetailResponse": {
+            "type": "object",
+            "properties": {
+                "away_goals": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "away_team_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "away_team_name": {
+                    "type": "string",
+                    "example": "Team B"
+                },
+                "home_goals": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "home_team_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "home_team_name": {
+                    "type": "string",
+                    "example": "Team A"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "played": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "played_at": {
+                    "type": "string",
+                    "example": "2023-10-27T15:00:00Z"
+                },
+                "week": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "api.MatchesResponse": {
+            "type": "object",
+            "properties": {
+                "matches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.MatchDetailResponse"
+                    }
+                },
+                "total_matches": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "week": {
+                    "type": "string",
+                    "example": "3"
+                }
+            }
+        },
+        "api.PredictionResult": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-10-27 10:00:00"
+                },
+                "probability": {
+                    "type": "number",
+                    "example": 0.25
+                },
+                "team_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "team_name": {
+                    "type": "string",
+                    "example": "Team A"
+                }
+            }
+        },
+        "api.PredictionsListResponse": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "type": "string",
+                    "example": "Monte Carlo Simulation (2,000 iterations)"
+                },
+                "predictions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.PredictionResult"
+                    }
+                },
+                "total_teams": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "week": {
+                    "type": "integer",
+                    "example": 4
+                }
+            }
+        },
+        "api.SimulationResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Operation successful"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "api.StandingsResponse": {
+            "type": "object",
+            "properties": {
+                "standings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Standing"
+                    }
+                },
+                "total_teams": {
+                    "type": "integer",
+                    "example": 4
+                }
+            }
+        },
+        "models.Standing": {
+            "type": "object",
+            "properties": {
+                "drawn": {
+                    "description": "Number of matches drawn",
+                    "type": "integer"
+                },
+                "goal_difference": {
+                    "description": "Goal difference (can be negative)",
+                    "type": "integer"
+                },
+                "goals_against": {
+                    "description": "Number of goals conceded",
+                    "type": "integer"
+                },
+                "goals_for": {
+                    "description": "Number of goals scored",
+                    "type": "integer"
+                },
+                "lost": {
+                    "description": "Number of matches lost",
+                    "type": "integer"
+                },
+                "played": {
+                    "description": "Number of matches played",
+                    "type": "integer"
+                },
+                "points": {
+                    "description": "Total points",
+                    "type": "integer"
+                },
+                "team_id": {
+                    "description": "Team ID",
+                    "type": "integer"
+                },
+                "team_name": {
+                    "description": "Team name",
+                    "type": "string"
+                },
+                "won": {
+                    "description": "Number of matches won",
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

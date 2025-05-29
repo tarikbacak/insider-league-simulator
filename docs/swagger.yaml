@@ -1,0 +1,362 @@
+basePath: /api/v1
+definitions:
+  api.APIInfoResponse:
+    properties:
+      endpoints:
+        additionalProperties:
+          type: string
+        type: object
+      message:
+        example: Insider League Simulator API
+        type: string
+      version:
+        example: 1.0.0
+        type: string
+    type: object
+  api.ErrorResponse:
+    properties:
+      detail:
+        example: Detailed error information
+        type: string
+      error:
+        example: Error message
+        type: string
+      timestamp:
+        example: "2023-10-27 10:00:00"
+        type: string
+    type: object
+  api.HealthCheckResponse:
+    properties:
+      service:
+        example: insider-league-simulator
+        type: string
+      status:
+        example: healthy
+        type: string
+      timestamp:
+        $ref: '#/definitions/api.HealthCheckTimestamp'
+    type: object
+  api.HealthCheckSecondsValue:
+    properties:
+      value:
+        example: "2023-10-27 10:00:00"
+        type: string
+    type: object
+  api.HealthCheckTimestamp:
+    properties:
+      unix:
+        $ref: '#/definitions/api.HealthCheckUnixTimestamp'
+    type: object
+  api.HealthCheckUnixTimestamp:
+    properties:
+      seconds:
+        $ref: '#/definitions/api.HealthCheckSecondsValue'
+    type: object
+  api.InitResponse:
+    properties:
+      message:
+        example: Database initialized successfully
+        type: string
+      note:
+        example: New random fixture generated
+        type: string
+      timestamp:
+        example: "2023-10-27 10:00:00"
+        type: string
+    type: object
+  api.MatchDetailResponse:
+    properties:
+      away_goals:
+        example: 1
+        type: integer
+      away_team_id:
+        example: 2
+        type: integer
+      away_team_name:
+        example: Team B
+        type: string
+      home_goals:
+        example: 2
+        type: integer
+      home_team_id:
+        example: 1
+        type: integer
+      home_team_name:
+        example: Team A
+        type: string
+      id:
+        example: 1
+        type: integer
+      played:
+        example: true
+        type: boolean
+      played_at:
+        example: "2023-10-27T15:00:00Z"
+        type: string
+      week:
+        example: 1
+        type: integer
+    type: object
+  api.MatchesResponse:
+    properties:
+      matches:
+        items:
+          $ref: '#/definitions/api.MatchDetailResponse'
+        type: array
+      total_matches:
+        example: 10
+        type: integer
+      week:
+        example: "3"
+        type: string
+    type: object
+  api.PredictionResult:
+    properties:
+      created_at:
+        example: "2023-10-27 10:00:00"
+        type: string
+      probability:
+        example: 0.25
+        type: number
+      team_id:
+        example: 1
+        type: integer
+      team_name:
+        example: Team A
+        type: string
+    type: object
+  api.PredictionsListResponse:
+    properties:
+      method:
+        example: Monte Carlo Simulation (2,000 iterations)
+        type: string
+      predictions:
+        items:
+          $ref: '#/definitions/api.PredictionResult'
+        type: array
+      total_teams:
+        example: 4
+        type: integer
+      week:
+        example: 4
+        type: integer
+    type: object
+  api.SimulationResponse:
+    properties:
+      message:
+        example: Operation successful
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  api.StandingsResponse:
+    properties:
+      standings:
+        items:
+          $ref: '#/definitions/models.Standing'
+        type: array
+      total_teams:
+        example: 4
+        type: integer
+    type: object
+  models.Standing:
+    properties:
+      drawn:
+        description: Number of matches drawn
+        type: integer
+      goal_difference:
+        description: Goal difference (can be negative)
+        type: integer
+      goals_against:
+        description: Number of goals conceded
+        type: integer
+      goals_for:
+        description: Number of goals scored
+        type: integer
+      lost:
+        description: Number of matches lost
+        type: integer
+      played:
+        description: Number of matches played
+        type: integer
+      points:
+        description: Total points
+        type: integer
+      team_id:
+        description: Team ID
+        type: integer
+      team_name:
+        description: Team name
+        type: string
+      won:
+        description: Number of matches won
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Insider Football League Simulator using Poisson Distribution & Monte
+    Carlo methods
+  title: Insider League Simulator API
+  version: "1.0"
+paths:
+  /:
+    get:
+      description: Returns basic information about the API and its endpoints.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.APIInfoResponse'
+      summary: API Information
+      tags:
+      - info
+  /health:
+    get:
+      description: Checks the health of the service
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.HealthCheckResponse'
+      summary: Health check
+      tags:
+      - health
+  /init:
+    post:
+      description: Resets and initializes the database with new random fixtures
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.InitResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Initialize database
+      tags:
+      - reset
+  /matches:
+    get:
+      description: Returns list of matches for a specific week or all weeks
+      parameters:
+      - description: Week number
+        in: query
+        name: week
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.MatchesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Get match list
+      tags:
+      - matches
+  /matches/all:
+    post:
+      description: Simulates all remaining unplayed matches until the end of the season
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SimulationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Simulate all remaining weeks
+      tags:
+      - simulation
+  /matches/next:
+    post:
+      description: Simulates all matches for the next unplayed week using Poisson
+        distribution
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SimulationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Simulate next week's matches
+      tags:
+      - simulation
+  /predictions:
+    get:
+      description: Returns championship predictions based on Monte Carlo simulation
+        for a specific week.
+      parameters:
+      - description: Week number for prediction
+        in: query
+        name: week
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.PredictionsListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Get championship predictions
+      tags:
+      - predictions
+  /standings:
+    get:
+      description: Returns current league table with teams' points, goals, and other
+        statistics
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.StandingsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: Get league standings
+      tags:
+      - standings
+swagger: "2.0"
